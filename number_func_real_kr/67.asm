@@ -1,6 +1,6 @@
 section .text
-	global _foo
-_foo:
+	global f
+f:
 	mov r8d, edi
 	mov eax , edi
 	cmp r8d , 0
@@ -18,12 +18,12 @@ _foo:
 		div ecx
 		cmp edx,ebx
 		mov ebx,edx
-		je .plus_ans:
+		.plus_ans:
 			imul edx,r10d
 			add r9d,edx
 			imul r10d,10
-		jmp .loop:				
-	.restore:
+		jmp .loop				
+	.restore_sign:
 		mov eax,r9d
 		cmp r8d,0
 		jge .done

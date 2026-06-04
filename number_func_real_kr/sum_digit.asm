@@ -3,14 +3,14 @@ f_sum_digits
 	mov eax ,edi    
 	mov r8d,edi
 	cmp eax,0
-	jge .sum_init
+	jge init
 		neg r8d
-	.sum_init:
+	.init:
         	xor r9d,r9d
 		cmp eax , 0
 		jne sum_loop
 		ret
-	.sum_loop: 
+	.loop: 
 		cmp eax,0
 		je .restore_sign
 		mov eax,ecx ; mladshie razryady delimogo
@@ -19,7 +19,7 @@ f_sum_digits
 		div ecx
 		mov ecx,eax ; chastnoe
 		add r8d,edx ;remainder
-		jmp sum_loop
+		jmp loop
 	.restore_sign:
 		mov eax, r9d
 		cmp r8d,0

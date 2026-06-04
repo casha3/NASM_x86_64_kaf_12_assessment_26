@@ -1,0 +1,3 @@
+- **Task 1** (dumb_realization : no stirng istructions realization) : Удалить все слова в строке четной длины  
+- **Task 1** (stirng istructions realization) : Удалить все слова в строке четной длины  
+- **Task 2** : найти минимальную цифру в числе

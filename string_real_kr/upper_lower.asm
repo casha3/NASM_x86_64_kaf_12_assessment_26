@@ -1,10 +1,10 @@
 ; swap upper_register <-> lower_register
 bits 64
-%define SYS_READ 0
-%define SYS_WRITE 1
-%define SYS_EXIT 60
-%define STDIN 0
-%define STDOUT 1
+SYS_READ equ 0
+SYS_WRITE equ 1
+SYS_EXIT equ 60
+STDIN equ 0
+STDOUT equ 1
 
 section .bss
     buf1 resb 82
@@ -20,34 +20,34 @@ _start:
     ; rax = len = amount of readen bytes = sys_read()
     mov rbx , rax
     xor rcx,rcx
-    swap_loop:
+    .swap_loop:
         cmp rcx, rbx
-        jge swap_done
+        jge .swap_done
         ; doing main part of the cycle when 0 , 1 .. < len
         ; if we need to change letter jump into swap_save 
         ; else jump into swap_next ( nothing changes)
         mov al, [buf1 + rcx]
         ; int('A') < int('Z') < int('a') < int('z')  
         cmp al , 'a'
-        jl check_upper
+        jl .check_upper
         cmp al , 'z'
-        jg check_upper
+        jg .swap_save
         ; we found upper_register -> change on upper_register
         sub al , 32
-        jmp swap_save
-        check_upper:
+        jmp .swap_save
+        .check_upper:
             cmp al, 'A'
-            jl swap_next 
+            jl .swap_save
             cmp al , 'Z'
-            jg swap_next
+            jg .swap_save
             ; we found lower_register -> change on upper_register
             add al , 32
-        swap_save:
+        .swap_save:
             mov [buf2+rcx], al
-        swap_next:
+        .swap_next:
             inc rcx
-            jmp swap_loop
-    swap_done:
+            jmp .swap_loop
+    .swap_done:
         mov rax , SYS_WRITE
         mov rdi , STDOUT
         mov rsi, buf2

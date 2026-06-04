@@ -1,5 +1,5 @@
-global f_plus_3
-f_plus_3:
+global f
+f:
 	; foo ( int_32 num ) 
 	; r8d = num
  	; r9d = ans
@@ -7,8 +7,8 @@ f_plus_3:
 	mov r8d , edi ; r8d = num
 	mov eax , edi
 	cmp eax , 0
-	jge .init:
-		neg eax
+	jge .init
+	neg eax
 	; r8d = abs(num)
 	.init:
 		xor r9d,r9d ; ans = 0
@@ -20,7 +20,7 @@ f_plus_3:
 		mov ecx,10
 		div ecx
 		; edx - remainder
-		add edx, 10 
+		add edx, 3 
 		cmp edx,10
 		jl .no_overflow
 		sub edx, 10

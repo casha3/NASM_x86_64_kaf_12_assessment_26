@@ -30,57 +30,40 @@ _start:
 		cmp byte[buf1+rcx] , ` `
 		je .OK
 		cmp byte[buf1+rcx], `\t`
-		jne .good_forwarding_rcx
+		jne .forwarding_rcx
 		.OK:
 			mov dl , byte[buf1+rcx]
 			mov byte[buf2+r9] , dl
 			inc r9
 			inc rcx
 			inc r12
-		.good_forwarding_rcx:
+		.forwarding_rcx:
 			cmp rcx,rbx
-			jge .good_forwarding_r12
+			jge .pivot
 			mov dl , byte[buf1+rcx]
 			cmp dl , ` `
-			je .good_forwarding_r12
+			je .pivot
 			cmp dl , `\t`
-			je .good_forwarding_r12
-			cmp dl , `a`
-			jl .YELLOW_FLAG
-			cmp dl , `z`
-			jg .bad_forwarding_rcx
+			je .pivot
 			inc rcx
-			jmp .good_forwarding_rcx
-			.YELLOW_FLAG:
-				cmp dl , `A`
-				jl .bad_forwarding_rcx
-				cmp dl , `Z`
-				jg .bad_forwarding_rcx
-				inc rcx
-				jmp .good_forwarding_rcx
-		.bad_forwarding_rcx:
-			cmp rcx,rbx
-			jge .bad_forwarding_r12
-			mov dl , byte[buf1+rcx]
-			cmp dl , ` `
-			je .bad_forwarding_r12
-			cmp dl , `\t`
-			je .bad_forwarding_r12
-			inc rcx
-			jmp .bad_forwarding_rcx
-		.good_forwarding_r12:
-			; dumb realization
-			; mozhno zamenit instructions like movsb
-			cmp r12,rcx
-			jge .loop
-			mov dl , byte[buf1+r12]
-			mov byte[buf2+r9] , dl
-			inc r9
-			inc r12
-			jmp .good_forwarding_r12
-		.bad_forwarding_r12:
-			mov r12,rcx
-			jmp .loop
+			jmp .forwarding_rcx
+		.pivot:
+			mov rdx , rcx
+			xor rdx , r12
+			test rdx,1
+			jz .bad_forwarding_r12
+			.good_forwarding_r12:
+				; mozhno zamenit instructions like movsb
+				cmp r12,rcx
+				jge .loop
+				mov dl , byte[buf1+r12]
+				mov byte[buf2+r9] , dl
+				inc r9
+				inc r12
+				jmp .good_forwarding_r12
+			.bad_forwarding_r12:
+				mov r12,rcx
+				jmp .loop
 	.keep_done:
 		mov rax , SYS_WRITE 
 		mov rdi , STDOUT 

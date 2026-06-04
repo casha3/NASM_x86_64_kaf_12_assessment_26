@@ -18,6 +18,7 @@ f:
 		div ecx
 		cmp edx,ebx
 		mov ebx,edx
+		je .loop
 		.plus_ans:
 			imul edx,r10d
 			add r9d,edx

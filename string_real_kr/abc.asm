@@ -1,20 +1,27 @@
 bits 64
-%define STDIN 0
-%define STDOUT 1
-%define SYS_EXIT 60
-%define SYS_READ 0
-%define SYS_WRITE 1
-global _start
+
+SYS_READ equ 0
+SYS_WRITE equ 1
+SYS_EXIT equ 60
+STDIN equ 0
+STDOUT equ 1
+
+TAB equ 9
+LF equ 10 ; back_slash_n
+SPC equ 32 ; space
+
 section .bss
 	buf1 resb 82
 	buf2 resb 82
 section .text
+	global _start
 _start:
 	mov rax , SYS_READ
 	mov rdi , STDIN
 	mov rsi , buf1
 	mov rdx , 81
 	syscall
+	dec rax  ; elimination_of_LF_aka_backslashn 
 	mov rbx , rax
 	xor rcx,rcx
 	xor r12,r12
@@ -22,9 +29,9 @@ _start:
 		cmp rcx,rbx
 		jge .wasted
 		mov dl , byte[buf1+rcx]
-		cmp dl , '\t'
+		cmp dl , `\t`
 		je .next_iteration_first_symbol
-		cmp dl , ' '
+		cmp dl , ` `
 		jne .loop_letter
 		.next_iteration_first_symbol:
 			mov byte[buf2+r12] , dl
@@ -35,27 +42,29 @@ _start:
 		cmp rcx,rbx
 		jge .success
 		mov dl , byte[buf1 + rcx ]
-		cmp dl , '\t'
+		cmp dl , `\t`
 		je .loop_delim_entrance
-		cmp dl , ' '
+		cmp dl , ` `
 		je .loop_delim_entrance
-		inc rcx
-		inc r12
-		jmp .loop_letter
+		.copy_from_buf1_to_buf2:
+			mov byte[buf2 + r12] , dl
+			inc rcx
+			inc r12
+			jmp .loop_letter
 	.loop_delim_entrance:
-		mov byte[buf2+r12],'a'
+		mov byte[buf2+r12],`a`
 		inc r12
-		mov byte[buf2+r12],'b'
+		mov byte[buf2+r12],`b`
 		inc r12
-		mov byte[buf2+r12],'c'
+		mov byte[buf2+r12],`c`
 		inc r12
-		.loop_delim
+		.loop_delim:
 			cmp rcx,rbx
 			jge .wasted
 			mov dl , byte[buf1+rcx]
-			cmp dl , '\t'
+			cmp dl , `\t`
 			je .next_iteration_loop_delim
-			cmp dl , ' '
+			cmp dl , ` `
 			jne .loop_letter
 			.next_iteration_loop_delim:
 				mov byte[buf2+r12] , dl
@@ -63,11 +72,11 @@ _start:
 				inc r12
 				jmp .loop_delim
 	.success:
-		mov byte[buf2+r12],'a'
+		mov byte[buf2+r12],`a`
 		inc r12
-		mov byte[buf2+r12],'b'
+		mov byte[buf2+r12],`b`
 		inc r12
-		mov byte[buf2+r12],'c'
+		mov byte[buf2+r12],`c`
 		inc r12
 	.wasted:
 		mov byte[buf2+r12],10
